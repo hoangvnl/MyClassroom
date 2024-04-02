@@ -14,5 +14,8 @@ namespace MyClassroom.Contracts.EFCoreFilter
 
         public IEnumerable<Expression<Func<TEntity, object>>> Includes { get; set; } = null;
 
+        public int? Offset { get; set; } = null;
+        public int? Limit { get; set; } = null;
+
     }
 }

@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyClassroom.Contracts.EFCoreFilter;
 using MyClassroom.Domain.SeedWork;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
+using MyClassroom.Domain.AggregatesModel.ClassroomAggregate;
 
 namespace MyClassroom.Infrastructure.Repositories
 {
@@ -79,7 +78,7 @@ namespace MyClassroom.Infrastructure.Repositories
             return entities;
         }
 
-        public virtual Task<TEntity?> CreateAsync(TEntity entity)
+        public virtual Task<TEntity> CreateAsync(TEntity entity)
         {
             throw new NotImplementedException();
         }
@@ -89,7 +88,7 @@ namespace MyClassroom.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public virtual async Task<TEntity?> GetAsync(EFCoreFilter<TEntity> eFCoreFilter)
+        public virtual async Task<TEntity> GetAsync(EFCoreFilter<TEntity> eFCoreFilter)
         {
             var query = BaseQuery(eFCoreFilter);
             var entity = await query.FirstOrDefaultAsync();
@@ -98,6 +97,11 @@ namespace MyClassroom.Infrastructure.Repositories
         }
 
         public virtual Task<TEntity> UpdateAsync(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TEntity>> GetListAsync(EFCoreFilter<Classroom> eFCoreFilter)
         {
             throw new NotImplementedException();
         }

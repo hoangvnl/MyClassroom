@@ -22,10 +22,5 @@ namespace MyClassroom.Infrastructure.Repositories
 
             return await base.GetAsync(filter);
         }
-
-        public Task<List<Classroom>> GetListAsync(Expression<Func<Classroom, bool>> expression, int? limit = null, int? offset = null)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

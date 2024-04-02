@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using MyClassroom.Contracts.EFCoreFilter;
+using System.Linq.Expressions;
 
 namespace MyClassroom.Domain.AggregatesModel.ClassroomAggregate
 {
@@ -7,6 +8,6 @@ namespace MyClassroom.Domain.AggregatesModel.ClassroomAggregate
         Task<Classroom> CreateAsync(Classroom room);
         Task<Classroom> UpdateAsync(Classroom room);
         Task<Classroom> GetByIdAsync(Guid id);
-        Task<List<Classroom>> GetListAsync(Expression<Func<Classroom, bool>> expression, int? limit = null, int? offset = null);
+        Task<List<Classroom>> GetListAsync(EFCoreFilter<Classroom> eFCoreFilter);
     }
 }

@@ -10,12 +10,12 @@ namespace MyClassroom.Application.Commands
     public class CreateClassroomCommandHandler : IRequestHandler<CreateClassroomCommand, BaseResponse<ClassroomDto>>
     {
         private readonly ILogger _logger;
-        private readonly IClassroomRepository _ClassroomRepository;
+        private readonly IClassroomRepository _classroomRepository;
         private readonly IMapper _mapper;
 
         public CreateClassroomCommandHandler(ILogger logger, IClassroomRepository ClassroomRepository, IMapper mapper)
         {
-            _ClassroomRepository = ClassroomRepository ?? throw new ArgumentNullException(nameof(ClassroomRepository));
+            _classroomRepository = ClassroomRepository ?? throw new ArgumentNullException(nameof(ClassroomRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -30,7 +30,7 @@ namespace MyClassroom.Application.Commands
 
             Classroom Classroom = new(createClassroomRequest.Title, createClassroomRequest.Description, userContext.UserId);
 
-            var ClassroomResult = _ClassroomRepository.CreateAsync(Classroom);
+            var ClassroomResult = _classroomRepository.CreateAsync(Classroom);
             var response = _mapper.Map<ClassroomDto>(ClassroomResult);
 
             _logger.Information("----- Created Class room - {@Classroom}", Classroom);
