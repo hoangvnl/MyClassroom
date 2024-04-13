@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using AutoMapper.Internal;
 using FluentValidation;
 using MediatR;
 using MyClassroom.Application.Behaviors;
@@ -10,49 +11,9 @@ namespace MyClassroom.API.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            //builder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly)
-            //    .AsImplementedInterfaces();
-
             builder.RegisterAssemblyTypes(typeof(IRequest).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IRequestHandler<,>));
 
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(LoginQuery).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>));
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(RegisterCommand).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>));            
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(CreateClassroomCommand).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>)); 
-
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(GetAllClassroomQuery).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>));         
-
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(JoinClassroomCommand).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>));
-
-            //builder.RegisterAssemblyTypes(
-            //                      typeof(DeleteUserCommand).GetTypeInfo().Assembly).
-            //                           AsClosedTypesOf(typeof(IRequestHandler<,>));
-
-            //builder.RegisterAssemblyTypes(typeof(LoginQueryValidator).GetTypeInfo().Assembly)
-            //                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
-            //                .AsImplementedInterfaces();
-            //builder.RegisterAssemblyTypes(typeof(RegisterCommandValidator).GetTypeInfo().Assembly)
-            //                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
-            //                .AsImplementedInterfaces();
-            //builder.RegisterAssemblyTypes(typeof(CreateClassroomCommandValidator).GetTypeInfo().Assembly)
-            //                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
-            //                .AsImplementedInterfaces();
-            //builder.RegisterAssemblyTypes(typeof(JoinClassroomValidator).GetTypeInfo().Assembly)
-            //                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
-            //                .AsImplementedInterfaces();
-            //builder.RegisterAssemblyTypes(typeof(DeleteUserCommandValidator).GetTypeInfo().Assembly)
-            //                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
-            //                .AsImplementedInterfaces();
 
             builder.RegisterAssemblyTypes(typeof(AbstractValidator<>).GetTypeInfo().Assembly)
                             .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
@@ -62,6 +23,7 @@ namespace MyClassroom.API.Modules
                                            As(typeof(IPipelineBehavior<,>));
             builder.RegisterGeneric(typeof(ValidatorBehavior<,>)).
                                            As(typeof(IPipelineBehavior<,>));
+
         }
     }
 }
