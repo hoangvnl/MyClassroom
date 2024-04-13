@@ -11,14 +11,14 @@ namespace MyClassroom.Application.Commands
 {
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, BaseResponse<bool>>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger _logger;
 
 
-        private ApplicationUser User = null;
+        private User _user = null;
 
-        public DeleteUserCommandHandler(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext, ILogger logger)
+        public DeleteUserCommandHandler(UserManager<User> userManager, ApplicationDbContext dbContext, ILogger logger)
         {
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -34,8 +34,8 @@ namespace MyClassroom.Application.Commands
                 return returnValue;
             }
 
-            User.IsActive = false;
-            var deleteResult = await _userManager.UpdateAsync(User);
+            
+            var deleteResult = await _userManager.UpdateAsync(_user);
 
             if (deleteResult.Succeeded == true)
             {
@@ -49,9 +49,9 @@ namespace MyClassroom.Application.Commands
 
         private async Task<BaseResponse<bool>> Validate(DeleteUserCommand command)
         {
-            User = await _userManager.FindByIdAsync(command.UserId.ToString());
+            _user = await _userManager.FindByIdAsync(command.UserId.ToString());
 
-            if (User != null)
+            if (_user != null)
             {
                 return new(APIProblemFactory.UserNotFound());
             }

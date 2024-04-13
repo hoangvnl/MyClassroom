@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyClassroom.Domain.AggregatesModel.UserClassroomAggregate
 {
-    public class UserClassroom : Entity, IAggregateRoot
+    public class UserClassroom : Entity<Guid>, IAggregateRoot
     {
         public Guid ClassroomId { get; protected set; }
         public Guid UserId { get; protected set; }
         public Classroom Classroom { get; protected set; } = null!;
-        public ApplicationUser User { get; protected set; } = null!;
+        public User User { get; protected set; } = null!;
 
         public int UserClassroomJoinTypeId { get; protected set; }
         public UserClassroomJoinType UserClassroomJoinType { get; protected set; } = null!;

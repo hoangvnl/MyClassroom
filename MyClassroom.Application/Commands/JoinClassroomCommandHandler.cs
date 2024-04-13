@@ -13,10 +13,10 @@ namespace MyClassroom.Application.Commands
     {
         private readonly IClassroomRepository _classroomRepository;
         private readonly IUserClassroomRepository _userClassroomRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        public JoinClassroomCommandHandler(IClassroomRepository ClassroomRepository, UserManager<ApplicationUser> userManager, IUserClassroomRepository userClassroomRepository, IMapper mapper)
+        public JoinClassroomCommandHandler(IClassroomRepository ClassroomRepository, UserManager<User> userManager, IUserClassroomRepository userClassroomRepository, IMapper mapper)
         {
             _classroomRepository = ClassroomRepository ?? throw new ArgumentNullException(nameof(ClassroomRepository));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyClassroom.Contracts.EFCoreFilter;
+using MyClassroom.Domain.AggregatesModel.ClassroomAggregate;
 using MyClassroom.Domain.AggregatesModel.UserClassroomAggregate;
 using MyClassroom.Domain.SeedWork;
 
@@ -37,6 +39,11 @@ namespace MyClassroom.Infrastructure.Repositories
 
         }
 
+        public Task<UserClassroom> DeleteAsync(UserClassroom entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IList<Guid>> GetAllClassroomIdsByUserIdAsync(Guid userId)
         {
             var ClassroomIds = await _dbContext.UserClassrooms.Where(u => u.UserId == userId).Select(i => i.ClassroomId).ToListAsync() ?? new List<Guid>();
@@ -47,6 +54,21 @@ namespace MyClassroom.Infrastructure.Repositories
         {
             var userIds = await _dbContext.UserClassrooms.Where(u => u.ClassroomId == ClassroomId).Select(i => i.UserId).ToListAsync() ?? new List<Guid>();
             return userIds;
+        }
+
+        public Task<UserClassroom> GetAsync(EFCoreFilter<UserClassroom> eFCoreFilter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<UserClassroom>> GetListAsync(EFCoreFilter<Classroom> eFCoreFilter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserClassroom> UpdateAsync(UserClassroom entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -11,29 +11,27 @@ namespace MyClassroom.Application.Queries
 {
     public class LoginQueryHandler : IRequestHandler<LoginQuery, BaseResponse<LoginResponse>>
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthenticationService _authenticationService;
         private readonly APISettings _apiSettings;
+        private readonly IUserRepository _userRepository;
 
-        public LoginQueryHandler(SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,
+        public LoginQueryHandler(
             IOptions<APISettings> options,
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService,
+            IUserRepository userRepository)
         {
-            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
             _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
         public async Task<BaseResponse<LoginResponse>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
+            var result = await _userRepository.PasswordSignInAsync(request.UserName, request.Password);
 
-            if (result.Succeeded)
+            if (result)
             {
-                var user = await _userManager.FindByNameAsync(request.UserName);
+                var user = await _userRepository.GetByUserNameAsync(request.UserName);
 
                 if (user == null)
                 {

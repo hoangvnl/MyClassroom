@@ -16,6 +16,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using MyClassroom.API.Mappers;
 using System.Reflection;
+using MyClassroom.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -62,9 +63,6 @@ builder.Services.AddEntityFrameworkSqlServer()
                            // pedagogic purposes.
     );
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
 var configuration = builder.Configuration;
 
@@ -75,8 +73,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Services.AddSingleton(Log.Logger);
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
+//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+builder.Services.AddMediatRForLogic();
 var apiSettingsSection = builder.Configuration.GetSection("APISettings");
 builder.Services.Configure<APISettings>(apiSettingsSection);
 
@@ -117,7 +115,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    new ClassroomDbInitializer().SeedAsync(services).Wait();
+    //new ClassroomDbInitializer().SeedAsync(services).Wait();
 }
 
 // Configure the HTTP request pipeline.

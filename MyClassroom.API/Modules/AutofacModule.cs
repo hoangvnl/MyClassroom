@@ -29,10 +29,10 @@ namespace MyClassroom.API.Modules
                 return new ApplicationDbContext(optionsBuilder.Options);
             }).InstancePerLifetimeScope();
 
-            builder.RegisterType<UserManager<ApplicationUser>>()
+            builder.RegisterType<UserManager<User>>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
-            builder.RegisterType<SignInManager<ApplicationUser>>()
+            builder.RegisterType<SignInManager<User>>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
             builder.RegisterType<RoleManager<IdentityRole<Guid>>>()
@@ -55,6 +55,9 @@ namespace MyClassroom.API.Modules
                 .InstancePerLifetimeScope();            
             builder.RegisterType<UserClassroomRepository>()
                 .As<IUserClassroomRepository>()
+                .InstancePerLifetimeScope();            
+            builder.RegisterType<AuthenticationService>()
+                .As<IAuthenticationService>()
                 .InstancePerLifetimeScope();
         }
     }

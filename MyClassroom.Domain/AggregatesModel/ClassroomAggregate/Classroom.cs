@@ -8,7 +8,8 @@ namespace MyClassroom.Domain.AggregatesModel.ClassroomAggregate
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public List<ApplicationUser> Users { get; } = [];
+
+        public List<User> Users { get; } = [];
         public List<UserClassroom> UserClassrooms { get; } = [];
 
         protected Classroom()

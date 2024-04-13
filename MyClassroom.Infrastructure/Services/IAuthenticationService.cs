@@ -7,6 +7,6 @@ namespace MyClassroom.Infrastructure.Services
     public interface IAuthenticationService
     {
         SigningCredentials GetSignCredentials();
-        Task<List<Claim>> GetClaimsAsync(ApplicationUser user);
+        Task<List<Claim>> GetClaimsAsync(User user);
     }
 }

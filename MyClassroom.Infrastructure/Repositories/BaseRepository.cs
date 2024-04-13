@@ -78,9 +78,12 @@ namespace MyClassroom.Infrastructure.Repositories
             return entities;
         }
 
-        public virtual Task<TEntity> CreateAsync(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<TEntity>().Add(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
         }
 
         public virtual Task<TEntity> DeleteAsync(TEntity entity)

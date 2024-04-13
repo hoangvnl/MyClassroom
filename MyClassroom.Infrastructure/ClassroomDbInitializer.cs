@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyClassroom.Domain.AggregatesModel.UserAggregate;
 using MyClassroom.Domain.AggregatesModel.UserClassroomAggregate;
 using MyClassroom.Domain.SeedWork;
+using MyClassroom.Domain.AggregatesModel.RoleAggregate;
 
 namespace MyClassroom.Infrastructure;
 
@@ -20,8 +21,8 @@ public class ClassroomDbInitializer
 
     private void SeedUsersAndRoles(ApplicationDbContext context, IServiceProvider serviceProvider)
     {
-        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
 
         try
         {
@@ -38,17 +39,16 @@ public class ClassroomDbInitializer
 
         if (context.Roles.Any(x => x.Name == UserRoles.Administrator.ToString())) return;
 
-        roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Administrator.ToString())).GetAwaiter().GetResult();
-        roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.User.ToString())).GetAwaiter().GetResult();
+        roleManager.CreateAsync(new Role() { Name = UserRoles.Administrator.ToString() }).GetAwaiter().GetResult();
+        roleManager.CreateAsync(new Role() { Name = UserRoles.User.ToString() }).GetAwaiter().GetResult();
 
-        userManager.CreateAsync(new ApplicationUser
+        userManager.CreateAsync(new User
         {
             UserName = "admin@gmail.com",
             Email = "admin@gmail.com",
-            EmailConfirmed = true
         }, "Admin123!").GetAwaiter().GetResult();
 
-        ApplicationUser user = context.Users.FirstOrDefault(u => u.Email == "admin@gmail.com");
+        User user = context.Users.FirstOrDefault(u => u.Email == "admin@gmail.com");
         userManager.AddToRoleAsync(user, UserRoles.Administrator.ToString()).GetAwaiter().GetResult();
     }
 
