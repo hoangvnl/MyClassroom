@@ -129,6 +129,9 @@
   <data name="InvalidAuthentication" xml:space="preserve">
     <value>Invalid Authentication</value>
   </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Role not found</value>
+  </data>
   <data name="UserAlreadyJoinedClassroom" xml:space="preserve">
     <value>User already joined Classroom</value>
   </data>

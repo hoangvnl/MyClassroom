@@ -12,7 +12,7 @@ using MyClassroom.Infrastructure;
 namespace MyClassroom.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240413184608_DbInit")]
+    [Migration("20240414160152_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -120,7 +120,7 @@ namespace MyClassroom.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Salt")
@@ -199,7 +199,9 @@ namespace MyClassroom.Infrastructure.Migrations
                 {
                     b.HasOne("MyClassroom.Domain.AggregatesModel.RoleAggregate.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Role");
                 });

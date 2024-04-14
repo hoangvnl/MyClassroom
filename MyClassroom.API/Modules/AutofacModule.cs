@@ -1,24 +1,18 @@
 ﻿using Autofac;
 using MyClassroom.Infrastructure.Services;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using MyClassroom.Infrastructure;
-using Microsoft.AspNetCore.Identity;
 using MyClassroom.Domain.AggregatesModel.UserAggregate;
 using MyClassroom.Infrastructure.Repositories;
 using MyClassroom.Domain.AggregatesModel.ClassroomAggregate;
 using MyClassroom.Domain.AggregatesModel.UserClassroomAggregate;
+using MyClassroom.Domain.AggregatesModel.RoleAggregate;
 
 namespace MyClassroom.API.Modules
 {
-    public class AutofacModule : Module
+    public class AutofacModule(IConfiguration configuration) : Module()
     {
-        private readonly IConfiguration configuration;
-
-        public AutofacModule(IConfiguration configuration) : base()
-        {
-            this.configuration = configuration;
-        }
+        private readonly IConfiguration configuration = configuration;
 
         protected override void Load(ContainerBuilder builder)
         {
@@ -29,36 +23,38 @@ namespace MyClassroom.API.Modules
                 return new ApplicationDbContext(optionsBuilder.Options);
             }).InstancePerLifetimeScope();
 
-            builder.RegisterType<UserManager<User>>()
-                .AsSelf()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<SignInManager<User>>()
-                .AsSelf()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<RoleManager<IdentityRole<Guid>>>()
-                .AsSelf()
-                .InstancePerLifetimeScope();
             builder.RegisterType<AuthenticationService>()
                 .As<IAuthenticationService>()
                 .InstancePerLifetimeScope();
+
             builder.RegisterType<UserContextBuilder>()
                 .As<IUserContextBuilder>()
                 .InstancePerLifetimeScope();
+
             //builder.RegisterType<ClassroomProblemDetailsFactory>()
             //    .As<ProblemDetailsFactory>()
             //    .InstancePerLifetimeScope();
+
             builder.RegisterType<UserRepository>()
                 .As<IUserRepository>()
                 .InstancePerLifetimeScope();
+
             builder.RegisterType<ClassroomRepository>()
                 .As<IClassroomRepository>()
                 .InstancePerLifetimeScope();            
+
             builder.RegisterType<UserClassroomRepository>()
                 .As<IUserClassroomRepository>()
-                .InstancePerLifetimeScope();            
+                .InstancePerLifetimeScope();     
+            
             builder.RegisterType<AuthenticationService>()
                 .As<IAuthenticationService>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope();     
+            
+            builder.RegisterType<RoleRepository>()
+                .As<IRoleRepository>()
+                .InstancePerLifetimeScope();   
+
         }
     }
 }

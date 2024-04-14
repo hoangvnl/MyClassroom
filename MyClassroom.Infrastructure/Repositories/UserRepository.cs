@@ -1,30 +1,25 @@
 ﻿using MyClassroom.Domain.AggregatesModel.UserAggregate;
-using MyClassroom.Domain.SeedWork;
 using MyClassroom.Contracts;
-using Microsoft.AspNetCore.Identity;
 using MyClassroom.Contracts.EFCoreFilter;
 using System.Security.Cryptography;
 using System.Text;
 using MyClassroom.Infrastructure.Helper;
+using System.Linq.Expressions;
 
 namespace MyClassroom.Infrastructure.Repositories
 {
-    public class UserRepository(ApplicationDbContext dbContext) : BaseRepository<User, UserDto, Guid>(dbContext), IUserRepository
+    public class UserRepository(ApplicationDbContext dbContext) : BaseRepository<User, UserDTO, Guid>(dbContext), IUserRepository
     {
-        private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-
-        public IUnitOfWork UnitOfWork
+        protected override IEnumerable<Expression<Func<User, object>>> GetAllRelatedObjects()
         {
-            get
+            return new Expression<Func<User, object>>[]
             {
-                return (IUnitOfWork)_dbContext;
-            }
+                user => user.Role
+            };
         }
 
-        public async Task<User> CreateAsync(User user, string password, UserRoles role = UserRoles.User)
+        public async Task<User> CreateAsync(User user, string password, Roles role = Roles.User)
         {
-            using var transition = _dbContext.Database.BeginTransaction();
-
             try
             {
                 var salt = GenSaltHelper.GenerateSalt();
@@ -35,12 +30,10 @@ namespace MyClassroom.Infrastructure.Repositories
 
                 var result = await base.CreateAsync(user);
 
-                transition.Commit();
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                transition.Rollback();
                 throw;
             }
         }
@@ -78,14 +71,17 @@ namespace MyClassroom.Infrastructure.Repositories
             return user;
         }
 
-        public async Task<bool> PasswordSignInAsync(string userName, string password)
+        public async Task<User?> PasswordSignInAsync(string userName, string password)
         {
             EFCoreFilter<User> eFCoreFilter = new()
             {
-                Filters = user => user.IsDeleted == false && user.Email.Equals(userName)
+                Filters = user => user.IsDeleted == false && user.UserName.Equals(userName)
             };
 
             var storedUser = await base.GetAsync(eFCoreFilter);
+
+            if (storedUser == null) return null;
+
             string storedHashedPassword = storedUser.HashedPassword;
             var storedSaltBytes = storedUser.Salt;
 
@@ -102,17 +98,16 @@ namespace MyClassroom.Infrastructure.Repositories
             // Compare the entered password hash with the stored hash
             if (enteredPasswordHash == storedHashedPassword)
             {
-                return true;
+                return storedUser;
             }
             else
             {
-                return false;
+                return null;
             }
-
 
         }
 
-        private string HashPassword(string password, byte[] salt)
+        private static string HashPassword(string password, byte[] salt)
         {
             using (SHA256 sha256 = SHA256.Create())
             {

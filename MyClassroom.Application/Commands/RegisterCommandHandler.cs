@@ -2,24 +2,18 @@
 using MyClassroom.Contracts;
 using MyClassroom.Domain.AggregatesModel.UserAggregate;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Serilog;
-using MyClassroom.Infrastructure;
+using MyClassroom.Domain.AggregatesModel.RoleAggregate;
 
 namespace MyClassroom.Application.Commands
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, BaseResponse<RegisterResponse>>
+    public class RegisterCommandHandler(ILogger logger, IUserRepository userRepository, IRoleRepository roleRepository) : IRequestHandler<RegisterCommand, BaseResponse<RegisterResponse>>
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger _logger;
-        private readonly IUserRepository _userRepository;
+        private readonly ILogger _logger = logger.ForContext<RegisterCommandHandler>() ?? throw new ArgumentNullException(nameof(logger));
+        private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        private readonly IRoleRepository _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
 
-        public RegisterCommandHandler(ApplicationDbContext dbContext, ILogger logger, IUserRepository userRepository)
-        {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _logger = logger.ForContext<RegisterCommandHandler>() ?? throw new ArgumentNullException(nameof(logger));
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        }
+        private Role _role { get; set; }
 
         public async Task<BaseResponse<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
@@ -37,17 +31,13 @@ namespace MyClassroom.Application.Commands
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                UserName = request.UserName
+                UserName = request.UserName,
+                RoleId = _role.Id
             };
 
             try
             {
                 await _userRepository.CreateAsync(user, request.Password);
-
-                //if (createResult != null)
-                //{
-                //    returnValue = new(new RegisterResponse() { IsRegisterSuccess = true });
-                //}
 
                 return new(new RegisterResponse() { IsRegisterSuccess = true });
             }
@@ -70,6 +60,13 @@ namespace MyClassroom.Application.Commands
             if (await _userRepository.GetByEmailAsync(request.Email) != null)
             {
                 return new(APIProblemFactory.EmailAlreadyExist());
+            }
+
+            _role = await _roleRepository.GetByNameAsync(request.Role.ToString());
+
+            if (_role == null)
+            {
+                return new(APIProblemFactory.RoleNotFound());
             }
 
             return null;

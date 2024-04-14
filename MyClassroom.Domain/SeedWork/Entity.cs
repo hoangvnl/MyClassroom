@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MyClassroom.Domain.SeedWork
 {
-    public abstract class Entity
+    public abstract class Entity : IAggregateRoot
     {
         [Required]
         public Guid CreatedBy { get; protected set; }

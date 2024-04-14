@@ -1,20 +1,12 @@
 ﻿namespace MyClassroom.Contracts
 {
-    public class RegisterRequest
+    public class RegisterRequest(string userName, string password, string firstName, string lastName, string email, Roles role = Roles.User)
     {
-        public string Email { get; set; } = string.Empty;
-        public string UserName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-
-        public RegisterRequest(string userName, string password, string firstName, string lastName, string email)
-        {
-            UserName = userName;
-            Password = password;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-        }
+        public string Email { get; set; } = email;
+        public string UserName { get; set; } = userName;
+        public string Password { get; set; } = password;
+        public string FirstName { get; set; } = firstName;
+        public string LastName { get; set; } = lastName;
+        public Roles Role { get; set; } = role;
     }
 }

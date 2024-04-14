@@ -5,7 +5,7 @@ using MyClassroom.Domain.SeedWork;
 
 namespace MyClassroom.Domain.AggregatesModel.UserAggregate
 {
-    public class User : Entity<Guid>, IAggregateRoot
+    public class User : Entity<Guid>
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ namespace MyClassroom.Domain.AggregatesModel.UserAggregate
         public List<Classroom> Classrooms { get; } = [];
         public List<UserClassroom> UserClassrooms { get; } = [];
 
-        public Guid? RoleId { get; set; }
-        public Role? Role { get; set; } = null!;
+        public Guid RoleId { get; set; }
+        public Role Role { get; set; } = null!;
     }
 }

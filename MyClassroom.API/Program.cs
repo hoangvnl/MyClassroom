@@ -73,7 +73,6 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Services.AddSingleton(Log.Logger);
 
-//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddMediatRForLogic();
 var apiSettingsSection = builder.Configuration.GetSection("APISettings");
 builder.Services.Configure<APISettings>(apiSettingsSection);
@@ -115,7 +114,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    //new ClassroomDbInitializer().SeedAsync(services).Wait();
+    new ClassroomDbInitializer().SeedAsync(services).Wait();
 }
 
 // Configure the HTTP request pipeline.

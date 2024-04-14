@@ -8,7 +8,7 @@ namespace MyClassroom.Domain.AggregatesModel.UserAggregate
         Task<User> GetByIdAsync(Guid id);
         Task<User> GetByEmailAsync(string email);
         Task<User> GetByUserNameAsync(string userName);
-        Task<User> CreateAsync(User user, string password, UserRoles role = UserRoles.User);
-        Task<bool> PasswordSignInAsync(string userName, string password);
+        Task<User> CreateAsync(User user, string password, Roles role = Roles.User);
+        Task<User?> PasswordSignInAsync(string userName, string password);
     }
 }

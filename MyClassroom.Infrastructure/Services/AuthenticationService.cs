@@ -27,6 +27,7 @@ namespace MyClassroom.Infrastructure.Services
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim(ClaimTypes.Email, user.Email!),
                 new Claim("UserId", user.Id.ToString()),
+                new Claim("RoleName", user.Role.Name)
             };
             //var roles = await _userManager.GetRolesAsync(user);
 

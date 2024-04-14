@@ -12,21 +12,13 @@ namespace MyClassroom.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthenticationController : Controller
+    public class AuthenticationController(IMediator mediator,
+        ProblemDetailsFactory problemDetailsFactory,
+        IUserContextBuilder userContextBuilder) : Controller
     {
-        private readonly IMediator _mediator;
-        private readonly ProblemDetailsFactory _problemDetailsFactory;
-        private readonly IUserContextBuilder _userContextBuilder;
-
-        public AuthenticationController(IMediator mediator,
-            ProblemDetailsFactory problemDetailsFactory,
-            IUserContextBuilder userContextBuilder)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
-            _userContextBuilder = userContextBuilder ?? throw new ArgumentNullException(nameof(userContextBuilder));
-
-        }
+        private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        private readonly ProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
+        private readonly IUserContextBuilder _userContextBuilder = userContextBuilder ?? throw new ArgumentNullException(nameof(userContextBuilder));
 
         [HttpPost("/Login")]
         public async Task<IActionResult> LoginAsync([FromBody] Contracts.LoginRequest loginRequest)
@@ -46,7 +38,13 @@ namespace MyClassroom.API.Controllers
         [HttpPost("/Register")]
         public async Task<IActionResult> RegisterAsync([FromBody] Contracts.RegisterRequest registerRequest)
         {
-            var response = await _mediator.Send(new RegisterCommand(registerRequest.Email, registerRequest.Password, registerRequest.FirstName, registerRequest.LastName, registerRequest.UserName));
+            var response = await _mediator.Send(new RegisterCommand(
+                registerRequest.Email, 
+                registerRequest.Password,
+                registerRequest.FirstName, 
+                registerRequest.LastName,
+                registerRequest.UserName,
+                registerRequest.Role));
             
             if (response.IsSuccess == true)
             {

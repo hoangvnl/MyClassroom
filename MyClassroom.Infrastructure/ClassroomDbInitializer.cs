@@ -19,10 +19,10 @@ public class ClassroomDbInitializer
         await SeedUserClassroomJoinTypeAsync(context);
     }
 
-    private void SeedUsersAndRoles(ApplicationDbContext context, IServiceProvider serviceProvider)
+    private static void SeedUsersAndRoles(ApplicationDbContext context, IServiceProvider serviceProvider)
     {
-        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+        var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+        var roleRepository = serviceProvider.GetRequiredService<IRoleRepository>();
 
         try
         {
@@ -37,22 +37,22 @@ public class ClassroomDbInitializer
             throw;
         }
 
-        if (context.Roles.Any(x => x.Name == UserRoles.Administrator.ToString())) return;
+        if (context.Roles.Any(x => x.Name == Roles.Administrator.ToString())) return;
 
-        roleManager.CreateAsync(new Role() { Name = UserRoles.Administrator.ToString() }).GetAwaiter().GetResult();
-        roleManager.CreateAsync(new Role() { Name = UserRoles.User.ToString() }).GetAwaiter().GetResult();
+        var adminRole = roleRepository.CreateAsync(new Role() { Name = Roles.Administrator.ToString() }).GetAwaiter().GetResult();
+        var userRole = roleRepository.CreateAsync(new Role() { Name = Roles.User.ToString() }).GetAwaiter().GetResult();
 
-        userManager.CreateAsync(new User
+        userRepository.CreateAsync(new User
         {
-            UserName = "admin@gmail.com",
+            UserName = "admin",
             Email = "admin@gmail.com",
+            RoleId = adminRole.Id
         }, "Admin123!").GetAwaiter().GetResult();
 
         User user = context.Users.FirstOrDefault(u => u.Email == "admin@gmail.com");
-        userManager.AddToRoleAsync(user, UserRoles.Administrator.ToString()).GetAwaiter().GetResult();
     }
 
-    private async Task SeedUserClassroomJoinTypeAsync(ApplicationDbContext context)
+    private static async Task SeedUserClassroomJoinTypeAsync(ApplicationDbContext context)
     {
         using (context)
         {

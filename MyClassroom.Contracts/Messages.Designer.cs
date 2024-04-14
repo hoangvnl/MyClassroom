@@ -97,6 +97,15 @@ namespace MyClassroom.Contracts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Role not found.
+        /// </summary>
+        public static string RoleNotFound {
+            get {
+                return ResourceManager.GetString("RoleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User already joined Classroom.
         /// </summary>
         public static string UserAlreadyJoinedClassroom {

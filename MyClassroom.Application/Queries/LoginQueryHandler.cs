@@ -9,35 +9,21 @@ using MyClassroom.Infrastructure.Services;
 
 namespace MyClassroom.Application.Queries
 {
-    public class LoginQueryHandler : IRequestHandler<LoginQuery, BaseResponse<LoginResponse>>
+    public class LoginQueryHandler(
+        IOptions<APISettings> options,
+        IAuthenticationService authenticationService,
+        IUserRepository userRepository) : IRequestHandler<LoginQuery, BaseResponse<LoginResponse>>
     {
-        private readonly IAuthenticationService _authenticationService;
-        private readonly APISettings _apiSettings;
-        private readonly IUserRepository _userRepository;
-
-        public LoginQueryHandler(
-            IOptions<APISettings> options,
-            IAuthenticationService authenticationService,
-            IUserRepository userRepository)
-        {
-            _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
-            _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        }
+        private readonly IAuthenticationService _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+        private readonly APISettings _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
+        private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
 
         public async Task<BaseResponse<LoginResponse>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var result = await _userRepository.PasswordSignInAsync(request.UserName, request.Password);
+            var user = await _userRepository.PasswordSignInAsync(request.UserName, request.Password);
 
-            if (result)
+            if (user != null)
             {
-                var user = await _userRepository.GetByUserNameAsync(request.UserName);
-
-                if (user == null)
-                {
-                    return new BaseResponse<LoginResponse>(APIProblemFactory.InvalidAuthentication());
-                }
-
                 var signInCredentials = _authenticationService.GetSignCredentials();
                 var claims = await _authenticationService.GetClaimsAsync(user);
 

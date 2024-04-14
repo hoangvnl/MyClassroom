@@ -66,6 +66,13 @@ namespace MyClassroom.Application.Common
                 errors: new Dictionary<string, string[]>() { { fieldName, new string[] { Messages.UserAlreadyJoinedClassroom } } }
                 );
         }
+        public static APIProblem RoleNotFound(string fieldName = "Role")
+        {
+            return new APIProblem(
+                detail: Messages.RoleNotFound,
+                errors: new Dictionary<string, string[]>() { { fieldName, new string[] { Messages.RoleNotFound } } }
+                );
+        }
 
         public static APIProblem IdentityErrorsProblem(IEnumerable<IdentityError> identityErrors)
         {

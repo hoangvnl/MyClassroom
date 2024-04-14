@@ -6,7 +6,7 @@ using MyClassroom.Domain.AggregatesModel.ClassroomAggregate;
 
 namespace MyClassroom.Infrastructure.Repositories
 {
-    public abstract class BaseRepository<TEntity, TContract, TKey> : IRepository<TEntity, TKey> where TEntity : Entity<TKey>, IAggregateRoot
+    public abstract class BaseRepository<TEntity, TContract, TKey> : IRepository<TEntity, TKey> where TEntity : Entity<TKey>
     {
         protected readonly ApplicationDbContext _dbContext;
 
@@ -34,7 +34,7 @@ namespace MyClassroom.Infrastructure.Repositories
 
             if (eFCoreFilter.Filters is { } filter)
             {
-                entities.Where(filter);
+                entities = entities.Where(filter);
             }
 
             if (eFCoreFilter.Includes?.Any() == true)
@@ -80,8 +80,19 @@ namespace MyClassroom.Infrastructure.Repositories
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            _dbContext.Set<TEntity>().Add(entity);
-            await _dbContext.SaveChangesAsync();
+            using var transition = _dbContext.Database.BeginTransaction();
+
+            try
+            {
+                _dbContext.Set<TEntity>().Add(entity);
+                await _dbContext.SaveChangesAsync();
+                transition.Commit();
+            }
+            catch (Exception)
+            {
+                transition.Rollback();
+                throw;
+            }
 
             return entity;
         }

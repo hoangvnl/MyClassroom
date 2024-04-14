@@ -1,6 +1,6 @@
 ﻿namespace MyClassroom.Contracts
 {
-    public enum UserRoles
+    public enum Roles
     {
         User,
         Administrator
