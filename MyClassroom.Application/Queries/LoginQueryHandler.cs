@@ -2,24 +2,30 @@
 using MyClassroom.Contracts;
 using MyClassroom.Domain.AggregatesModel.UserAggregate;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using MyClassroom.Infrastructure.Services;
+using MyConfigurationServer.gRPC.Clients;
+using Microsoft.Extensions.Logging;
 
 namespace MyClassroom.Application.Queries
 {
     public class LoginQueryHandler(
         IOptions<APISettings> options,
+        IConfigurationClient client,
         IAuthenticationService authenticationService,
         IUserRepository userRepository) : IRequestHandler<LoginQuery, BaseResponse<LoginResponse>>
     {
         private readonly IAuthenticationService _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
         private readonly APISettings _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
         private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        private readonly IConfigurationClient _client = client ?? throw new ArgumentNullException(nameof(client));
+
 
         public async Task<BaseResponse<LoginResponse>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
+            var test = await client.GetClassroomConfigurationAsync(Guid.Empty);
+
             var user = await _userRepository.PasswordSignInAsync(request.UserName, request.Password);
 
             if (user != null)

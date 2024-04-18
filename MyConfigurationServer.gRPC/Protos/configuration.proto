@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "MyConfigurationServer.gRPC";
+
+package configuration;
+
+// The greeting service definition.
+service Configuration {
+  rpc GetClassConfiguration (ConfigurationLookupModel) returns (ConfigurationModel);
+
+  rpc UpdateClassConfiguration (UpdateConfigurationRequest) returns (ConfigurationModel);
+}
+
+message ConfigurationLookupModel{
+	string classId = 1;
+}
+
+message ConfigurationModel{
+	string color = 1;
+}
+
+message UpdateConfigurationRequest{
+	string classId = 1;
+	string color = 2;
+}

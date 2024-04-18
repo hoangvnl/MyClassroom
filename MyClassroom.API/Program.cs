@@ -17,6 +17,7 @@ using Microsoft.OpenApi.Models;
 using MyClassroom.API.Mappers;
 using System.Reflection;
 using MyClassroom.Application.Extensions;
+using MyConfigurationServer.gRPC.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -72,6 +73,8 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 builder.Services.AddSingleton(Log.Logger);
+
+builder.Services.RegisterClient(configuration);
 
 builder.Services.AddMediatRForLogic();
 var apiSettingsSection = builder.Configuration.GetSection("APISettings");

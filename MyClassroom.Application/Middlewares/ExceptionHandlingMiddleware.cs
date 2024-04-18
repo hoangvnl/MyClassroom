@@ -30,6 +30,14 @@ namespace MyClassroom.Application.Middlewares
         {
             var statusCode = GetStatusCode(exception);
 
+            string errMessage = exception.Message;
+
+            while (exception.InnerException != null)
+            {
+                errMessage += exception.InnerException.Message;
+                exception = exception.InnerException;
+            }
+
             var response = new APIProblem(exception.Message, GetErrors(exception));
 
             context.Response.ContentType = "application/json";
@@ -68,7 +76,7 @@ namespace MyClassroom.Application.Middlewares
                         })
                     .ToDictionary(x => x.Key, x => x.Values);
             }
-            
+
             return errors;
         }
     }

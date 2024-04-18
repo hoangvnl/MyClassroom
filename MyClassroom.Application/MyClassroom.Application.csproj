@@ -19,6 +19,7 @@
     <ProjectReference Include="..\MyClassroom.Contracts\MyClassroom.Contracts.csproj" />
     <ProjectReference Include="..\MyClassroom.Domain\MyClassroom.Domain.csproj" />
     <ProjectReference Include="..\MyClassroom.Infrastructure\MyClassroom.Infrastructure.csproj" />
+    <ProjectReference Include="..\MyConfigurationServer.gRPC\MyConfigurationServer.gRPC.csproj" />
   </ItemGroup>
 
   <ItemGroup>
