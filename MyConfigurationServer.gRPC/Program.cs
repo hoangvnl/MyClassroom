@@ -1,9 +1,16 @@
+using MyConfigurationServer.gRPC.Mapper;
 using MyConfigurationServer.gRPC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+
+builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+
+var DbSettingSection = builder.Configuration.GetSection("ClassroomConfigurationDatabase");
+builder.Services.Configure<ClassroomConfigurationDatabaseSettings>(DbSettingSection);
 
 var app = builder.Build();
 

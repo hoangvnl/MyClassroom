@@ -24,8 +24,6 @@ namespace MyClassroom.Application.Queries
 
         public async Task<BaseResponse<LoginResponse>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var test = await client.GetClassroomConfigurationAsync(Guid.Empty);
-
             var user = await _userRepository.PasswordSignInAsync(request.UserName, request.Password);
 
             if (user != null)
