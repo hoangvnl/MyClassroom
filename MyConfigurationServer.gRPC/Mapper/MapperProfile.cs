@@ -7,24 +7,28 @@ namespace MyConfigurationServer.gRPC.Mapper
     {
         public MapperProfile()
         {
-            CreateMap<ClassroomConfiguration, ConfigurationModel>()
+            CreateMap<ClassroomConfiguration, ClassroomConfigurationInternal>()
                 .ForMember(dest => dest.ClassroomId,
                            opt => opt.MapFrom(c => c.ClassroomId.ToString()))
                 .ReverseMap()
                 .ForMember(dest => dest.ClassroomId,
                            opt => opt.MapFrom(c => ConvertStringToGuid(c.ClassroomId)));
+
+            CreateMap<BaseResponseInternal, BaseResponse<ClassroomConfiguration>>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Configuration));
+
         }
 
-        private Guid ConvertStringToGuid(string guid)
+        private static Guid ConvertStringToGuid(string guid)
         {
-            Guid.TryParse(guid, out var returnValue);
-
-            if (returnValue == Guid.Empty)
+            if (Guid.TryParse(guid, out var result))
             {
-                throw new ArgumentException(null, nameof(guid));
+                return result;
             }
-
-            return returnValue;
+            else
+            {
+                throw new FormatException($"Invalid Guid format in ClassroomConfigurationInternal.Id : {guid}");
+            }
         }
     }
 }

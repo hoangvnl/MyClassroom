@@ -1,4 +1,6 @@
 ﻿
+using AutoMapper;
+using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Options;
 using MyConfigurationServer.gRPC.Contracts;
@@ -7,41 +9,57 @@ namespace MyConfigurationServer.gRPC.Clients
 {
     public class ConfigurationClient : IConfigurationClient
     {
-        private readonly Configuration.ConfigurationClient _configurationgRPCClient;
+        private readonly Configuration.ConfigurationClient _client;
         private readonly ConfigurationClientOptions _options;
+        private readonly IMapper _mapper;
 
-        public ConfigurationClient(ConfigurationClientOptions options)
+        public ConfigurationClient(IOptions<ConfigurationClientOptions> options, IMapper mapper)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+
             GrpcChannel channel = GrpcChannel.ForAddress(_options.BaseUrl);
-            _configurationgRPCClient = new(channel);
+            _client = new(channel);
         }
 
-        public async Task<ConfigurationModel> CreateClassroomConfigurationAsync(ClassroomConfiguration classroomConfiguration)
+        public async Task<BaseResponse<ClassroomConfiguration>> CreateClassroomConfigurationAsync(ClassroomConfiguration classroomConfiguration)
         {
-            //var returnValue = await _configurationgRPCClient.CreateClassroomConfigurationAsync(
-            //    new()
-            //    {
-            //        ClassroomId = classroomConfiguration.ClassroomId,
+            var request = new CreateClassroomConfigurationRequest()
+            {
+                ClassroomId = classroomConfiguration.Id,
+                Color = classroomConfiguration.Color
+            };
 
-            //    }
-            //    );
-            throw new NotImplementedException();
-
+            var config = await _client.CreateClassroomConfigurationAsync(request);
+            return _mapper.Map<BaseResponse<ClassroomConfiguration>>(config);
         }
 
-        public async Task<ConfigurationModel> GetClassroomConfigurationAsync(Guid classroomId)
+        public async Task<BaseResponse<ClassroomConfiguration>> GetClassroomConfigurationAsync(Guid classId)
         {
-            var returnValue = await _configurationgRPCClient.GetClassroomConfigurationAsync(
-                new ConfigurationLookupModel
+            try
+            {
+                var request = new GetClassroomConfigurationRequest()
                 {
-                    ClassroomId = classroomId.ToString()
-                });
+                    ClassroomId = classId.ToString()
+                };
 
-            return returnValue;
+                var config = await _client.GetClassroomConfigurationAsync(request);
+
+                return new BaseResponse<ClassroomConfiguration>()
+                {
+                    IsSuccess = config.IsSuccess,
+                    Message = config.Message,
+                    Value = _mapper.Map<ClassroomConfiguration>(config.Configuration)
+                };
+            }
+            catch (RpcException)
+            {
+                throw;
+            }
+
         }
 
-        public Task<ConfigurationModel> UpdateClassroomConfigurationAsync(UpdateConfigurationRequest updateConfigurationRequest)
+        public Task<BaseResponse<ClassroomConfiguration>> UpdateClassroomConfigurationAsync(ClassroomConfiguration updateConfigurationRequest)
         {
             throw new NotImplementedException();
         }

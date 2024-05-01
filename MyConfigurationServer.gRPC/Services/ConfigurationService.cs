@@ -34,61 +34,91 @@ namespace MyConfigurationServer.gRPC.Services
 
         }
 
-        public override async Task<ConfigurationModel> GetClassroomConfiguration(ConfigurationLookupModel request, ServerCallContext context)
+        public override async Task<BaseResponseInternal> CreateClassroomConfiguration(CreateClassroomConfigurationRequest request, ServerCallContext context)
         {
-            ConfigurationModel returnValue = new();
-
             try
             {
-                Guid.TryParse(request.ClassroomId, out var classroomId);
-
-                if (classroomId == Guid.Empty)
+                if (Guid.TryParse(request.ClassroomId, out var classroomId))
                 {
-                    throw new TypeAccessException($"{nameof(classroomId)}");
-                }
+                    var config = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();
 
-                var result = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();
-                returnValue.Color = result?.Color ?? string.Empty;
+                    if (config != null)
+                    {
+                        return new()
+                        {
+                            IsSuccess = false,
+                            Message = "Configuration already exists",
+                            Configuration = _mapper.Map<ClassroomConfigurationInternal>(config)
+                        };
+                    }
+                    else
+                    {
+                        var obj = new ClassroomConfiguration()
+                        {
+                            ClassroomId = classroomId,
+                            Color = request.Color,
+                        };
+
+                        await _configurationCollection.InsertOneAsync(obj);
+
+                        return new()
+                        {
+                            IsSuccess = true,
+                            Configuration = _mapper.Map<ClassroomConfigurationInternal>(obj)
+                        };
+                    }
+
+                }
+                else
+                {
+                    throw new FormatException($"Invalid Guid format: {request.ClassroomId}");
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public override async Task<BaseResponseInternal> GetClassroomConfiguration(GetClassroomConfigurationRequest request, ServerCallContext context)
+        {
+            try
+            {
+                if (Guid.TryParse(request.ClassroomId, out var classroomId))
+                {
+                    var config = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();
+
+                    if (config != null)
+                    {
+                        return new()
+                        {
+                            IsSuccess = true,
+                            Configuration = _mapper.Map<ClassroomConfigurationInternal>(config)
+                        };
+                    }
+                    else
+                    {
+                        return new()
+                        {
+                            IsSuccess = false,
+                            Configuration = null,
+                            Message = "Configuration not found"
+                        };
+
+                    }
+
+                }
+                else
+                {
+                    throw new FormatException($"Invalid Guid format: {request.ClassroomId}");
+                }
             }
             catch (Exception)
             {
                 throw;
             }
 
-            return returnValue;
+
         }
-
-        public override Task<ConfigurationModel> UpdateClassroomConfiguration(UpdateConfigurationRequest request, ServerCallContext context)
-        {
-            ConfigurationModel returnValue = new();
-
-            returnValue.Color = "White";
-
-            return Task.FromResult(returnValue);
-        }
-
-        public override async Task<ConfigurationModel> CreateClassroomConfiguration(ConfigurationModel request, ServerCallContext context)
-        {
-            ConfigurationModel returnValue = request;
-
-            try
-            {
-                Guid.TryParse(request.ClassroomId, out var classroomId);
-
-                if (classroomId == Guid.Empty)
-                {
-                    throw new TypeAccessException($"{nameof(classroomId)}");
-                }
-
-                await _configurationCollection.InsertOneAsync(_mapper.Map<ClassroomConfiguration>(request));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return returnValue;
-        }
-
     }
 }

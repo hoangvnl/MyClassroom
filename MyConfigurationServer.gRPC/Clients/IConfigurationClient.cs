@@ -4,8 +4,8 @@ namespace MyConfigurationServer.gRPC.Clients
 {
     public interface IConfigurationClient
     {
-        public Task<ConfigurationModel> GetClassroomConfigurationAsync(Guid classId);
-        public Task<ConfigurationModel> UpdateClassroomConfigurationAsync(UpdateConfigurationRequest updateConfigurationRequest);
-        public Task<ConfigurationModel> CreateClassroomConfigurationAsync(ClassroomConfiguration classroomConfiguration);
+        public Task<BaseResponse<ClassroomConfiguration>> GetClassroomConfigurationAsync(Guid classId);
+        public Task<BaseResponse<ClassroomConfiguration>> UpdateClassroomConfigurationAsync(ClassroomConfiguration updateConfigurationRequest);
+        public Task<BaseResponse<ClassroomConfiguration>> CreateClassroomConfigurationAsync(ClassroomConfiguration classroomConfiguration);
     }
 }

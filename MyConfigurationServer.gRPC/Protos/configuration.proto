@@ -6,24 +6,42 @@ package configuration;
 
 // The greeting service definition.
 service Configuration {
-  rpc GetClassroomConfiguration (ConfigurationLookupModel) returns (ConfigurationModel);
+  rpc GetClassroomConfiguration (GetClassroomConfigurationRequest) returns (BaseResponseInternal);
 
-  rpc UpdateClassroomConfiguration (UpdateConfigurationRequest) returns (ConfigurationModel);
+  rpc UpdateClassroomConfiguration (UpdateClassroomConfigurationRequest) returns (BaseResponseInternal);
 
-  rpc CreateClassroomConfiguration (ConfigurationModel) returns (ConfigurationModel);
+  rpc CreateClassroomConfiguration (CreateClassroomConfigurationRequest) returns (BaseResponseInternal);
 }
 
-message ConfigurationModel{
+message ClassroomConfigurationInternal {
 	string id = 1;
 	string classroomId = 2;
 	string color = 3;
 }
 
-message ConfigurationLookupModel{
+message GetClassroomConfigurationRequest {
 	string classroomId = 1;
 }
 
-message UpdateConfigurationRequest{
+message CreateClassroomConfigurationRequest {
 	string classroomId = 1;
 	string color = 2;
+}
+
+message UpdateClassroomConfigurationRequest {
+	string classroomId = 1;
+	string color = 2;
+}
+
+message BaseResponseInternal {
+	bool isSuccess = 1;
+	string message = 2;
+	oneof result {
+		ClassroomConfigurationInternal configuration = 3;
+	}
+}
+
+message ErrorDetails {
+	string error_code = 1;
+	string message = 2;
 }
