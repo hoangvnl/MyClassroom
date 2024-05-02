@@ -1,9 +1,12 @@
 ﻿
+using Amazon.Runtime.Internal;
 using AutoMapper;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Options;
 using MyConfigurationServer.gRPC.Contracts;
+using MyConfigurationServer.gRPC.Helpers;
+
 
 namespace MyConfigurationServer.gRPC.Clients
 {
@@ -45,18 +48,12 @@ namespace MyConfigurationServer.gRPC.Clients
 
                 var config = await _client.GetClassroomConfigurationAsync(request);
 
-                return new BaseResponse<ClassroomConfiguration>()
-                {
-                    IsSuccess = config.IsSuccess,
-                    Message = config.Message,
-                    Value = _mapper.Map<ClassroomConfiguration>(config.Configuration)
-                };
+                return new BaseResponse<ClassroomConfiguration>(_mapper.Map<ClassroomConfiguration>(config.Configuration));
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                throw;
+                return new BaseResponse<ClassroomConfiguration>(RpcErrorHandler.GetErrorDetail(ex.StatusCode));
             }
-
         }
 
         public Task<BaseResponse<ClassroomConfiguration>> UpdateClassroomConfigurationAsync(ClassroomConfiguration updateConfigurationRequest)

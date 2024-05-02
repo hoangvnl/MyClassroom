@@ -3,6 +3,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MyConfigurationServer.gRPC.Contracts;
+using MyConfigurationServer.gRPC.Helpers;
 
 namespace MyConfigurationServer.gRPC.Services
 {
@@ -44,12 +45,7 @@ namespace MyConfigurationServer.gRPC.Services
 
                     if (config != null)
                     {
-                        return new()
-                        {
-                            IsSuccess = false,
-                            Message = "Configuration already exists",
-                            Configuration = _mapper.Map<ClassroomConfigurationInternal>(config)
-                        };
+                        throw new RpcException(RpcErrorHandler.NotFound());
                     }
                     else
                     {
@@ -71,54 +67,39 @@ namespace MyConfigurationServer.gRPC.Services
                 }
                 else
                 {
-                    throw new FormatException($"Invalid Guid format: {request.ClassroomId}");
+                    throw new RpcException(RpcErrorHandler.InvalidArgument());
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw new RpcException(RpcErrorHandler.Internal());
             }
         }
 
         public override async Task<BaseResponseInternal> GetClassroomConfiguration(GetClassroomConfigurationRequest request, ServerCallContext context)
         {
-            try
+            if (Guid.TryParse(request.ClassroomId, out var classroomId))
             {
-                if (Guid.TryParse(request.ClassroomId, out var classroomId))
+                var config = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();
+
+                if (config != null)
                 {
-                    var config = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();
-
-                    if (config != null)
+                    return new()
                     {
-                        return new()
-                        {
-                            IsSuccess = true,
-                            Configuration = _mapper.Map<ClassroomConfigurationInternal>(config)
-                        };
-                    }
-                    else
-                    {
-                        return new()
-                        {
-                            IsSuccess = false,
-                            Configuration = null,
-                            Message = "Configuration not found"
-                        };
-
-                    }
-
+                        IsSuccess = true,
+                        Configuration = _mapper.Map<ClassroomConfigurationInternal>(config)
+                    };
                 }
                 else
                 {
-                    throw new FormatException($"Invalid Guid format: {request.ClassroomId}");
+                    throw new RpcException(RpcErrorHandler.AlreadyExists());
                 }
+
             }
-            catch (Exception)
+            else
             {
-                throw;
+                throw new RpcException(RpcErrorHandler.InvalidArgument());
             }
-
-
         }
     }
 }

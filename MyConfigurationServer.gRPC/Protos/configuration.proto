@@ -35,13 +35,7 @@ message UpdateClassroomConfigurationRequest {
 
 message BaseResponseInternal {
 	bool isSuccess = 1;
-	string message = 2;
 	oneof result {
-		ClassroomConfigurationInternal configuration = 3;
+		ClassroomConfigurationInternal configuration = 2;
 	}
-}
-
-message ErrorDetails {
-	string error_code = 1;
-	string message = 2;
 }

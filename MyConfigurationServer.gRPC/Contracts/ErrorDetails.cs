@@ -1,8 +1,10 @@
 ﻿namespace MyConfigurationServer.gRPC.Contracts
 {
-    public class ErrorDetails
+    public class ErrorDetails(string errorCode, string message)
     {
-        public string ErrorCode { get; set; }
-        public string Message { get; set; }
+        public string ErrorCode { get; set; } = errorCode;
+        public string Message { get; set; } = message;
     }
+
+
 }
