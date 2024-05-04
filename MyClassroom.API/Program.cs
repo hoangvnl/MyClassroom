@@ -18,6 +18,9 @@ using MyClassroom.API.Mappers;
 using System.Reflection;
 using MyClassroom.Application.Extensions;
 using MyConfigurationServer.gRPC.Clients;
+using Microsoft.Extensions.DependencyInjection;
+using MyConfigurationServer.gRPC;
+using MyClassroom.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -77,11 +80,12 @@ builder.Services.AddSingleton(Log.Logger);
 builder.Services.RegisterClient(configuration);
 
 builder.Services.AddMediatRForLogic();
-var apiSettingsSection = builder.Configuration.GetSection("APISettings");
-builder.Services.Configure<APISettings>(apiSettingsSection);
-
+var apiSettingsSection = builder.Configuration.GetSection("APISettings:MyClassroom");
 var apiSettings = apiSettingsSection.Get<APISettings>();
 var key = Encoding.ASCII.GetBytes(apiSettings.SecretKey);
+
+builder.Services.Configure<APISettings>(APISettings.MyClassroom, builder.Configuration.GetSection("APISettings:MyClassroom"));
+//builder.Services.Configure<APISettings>(APISettings.gRPCConfiguration, builder.Configuration.GetSection("APISettings:gRPCConfiguration"));
 
 builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 {

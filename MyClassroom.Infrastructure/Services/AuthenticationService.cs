@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using MyClassroom.Contracts;
 
 namespace MyClassroom.Infrastructure.Services
 {
@@ -12,9 +13,9 @@ namespace MyClassroom.Infrastructure.Services
         private readonly APISettings _apiSettings;
         private readonly IUserRepository _userRepository;
 
-        public AuthenticationService(IOptions<APISettings> options, IUserRepository userRepository)
+        public AuthenticationService(IOptionsSnapshot<APISettings> options, IUserRepository userRepository)
         {
-            _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
+            _apiSettings = options.Get(APISettings.MyClassroom) ?? throw new ArgumentNullException(nameof(options));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 

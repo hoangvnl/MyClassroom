@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MyConfigurationServer.gRPC.Contracts;
@@ -7,6 +8,7 @@ using MyConfigurationServer.gRPC.Helpers;
 
 namespace MyConfigurationServer.gRPC.Services
 {
+    [Authorize]
     public class ConfigurationService : Configuration.ConfigurationBase
     {
         private readonly ILogger<ConfigurationService> _logger;
@@ -39,6 +41,8 @@ namespace MyConfigurationServer.gRPC.Services
         {
             try
             {
+                var user = context.GetHttpContext().User;
+
                 if (Guid.TryParse(request.ClassroomId, out var classroomId))
                 {
                     var config = await _configurationCollection.Find(x => x.ClassroomId == classroomId)?.FirstOrDefaultAsync();

@@ -6,18 +6,17 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using MyClassroom.Infrastructure.Services;
 using MyConfigurationServer.gRPC.Clients;
-using Microsoft.Extensions.Logging;
 
 namespace MyClassroom.Application.Queries
 {
     public class LoginQueryHandler(
-        IOptions<APISettings> options,
+        IOptionsSnapshot<APISettings> namedOptionsAccessor,
         IConfigurationClient client,
         IAuthenticationService authenticationService,
         IUserRepository userRepository) : IRequestHandler<LoginQuery, BaseResponse<LoginResponse>>
     {
         private readonly IAuthenticationService _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
-        private readonly APISettings _apiSettings = options.Value ?? throw new ArgumentNullException(nameof(options));
+        private readonly APISettings _apiSettings = namedOptionsAccessor.Get(APISettings.MyClassroom) ?? throw new ArgumentNullException(nameof(namedOptionsAccessor));
         private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         private readonly IConfigurationClient _client = client ?? throw new ArgumentNullException(nameof(client));
 
@@ -28,6 +27,7 @@ namespace MyClassroom.Application.Queries
 
             if (user != null)
             {
+                var test = _client.GetClassroomConfigurationAsync(Guid.NewGuid());
                 var signInCredentials = _authenticationService.GetSignCredentials();
                 var claims = await _authenticationService.GetClaimsAsync(user);
 
